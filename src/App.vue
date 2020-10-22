@@ -1,19 +1,42 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <button @click="fetchData()">
+      Click me
+    </button>
+
+    {{ characters }}
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { defineComponent, ref } from '@vue/composition-api'
+import useAxios from './composables/useAxios'
 
-export default {
+export default defineComponent({
   name: 'App',
-  components: {
-    HelloWorld
+  setup () {
+    const characters = ref(null)
+    const { response, error, loading, exec } = useAxios()
+
+    function fetchData () {
+      exec({
+        url: 'https://rickandmortyapi.com/api/character'
+      })
+        .then(() => {
+          console.log(response.value)
+          characters.value = response.value.data.results
+        })
+    }
+
+    return {
+      fetchData,
+      characters,
+      response,
+      error,
+      loading
+    }
   }
-}
+})
 </script>
 
 <style>
